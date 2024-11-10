@@ -9,13 +9,16 @@ import {
   messageAtom,
   timeLeftAtom,
   userPointsAtom,
+  userDataAtom,
 } from '@/store';
+import { Button } from '@/components/ui/button';
 
 export default function Home() {
   const [userPoints, setUserPoints] = useAtom(userPointsAtom);
   const [accuracy, setAccuracy] = useAtom(accuracyAtom);
   const [message, setMessage] = useAtom(messageAtom);
   const [timeLeft, setTimeLeft] = useAtom(timeLeftAtom);
+  const [userData, setUserData] = useAtom(userDataAtom);
 
   const handleReset = () => {
     setUserPoints([]);
@@ -48,34 +51,28 @@ export default function Home() {
       </div>
       <div className={'flex flex-col gap-y-8 justify-center items-center'}>
         <div className={'text-white text-[18px]'}>
-          내 최고 기록 <span className={'text-[12px]'}>| </span> 55점
+          내 최고 기록 <span className={'text-[12px]'}>| </span>{' '}
+          {userData?.bestScore}점
         </div>
-        {/*TODO: 변경 높이, 길이*/}
-        {/* <div className={'flex items-center justify-center w-[300px] h-[300px]'}>
-                  <div
-                      className={'flex flex-col justify-center items-center w-[300px] h-[300px] rounded-full border-[5px] border-white'}>
-                      <div className={'text-[30px] text-red-400'}>37<span className={'text-white'}>점</span></div>
-                      <div className={'text-white'}>이렇게 뾰족한 원은 처음봐요</div>
-                  </div>
-              </div> */}
-
         <CircleGame />
       </div>
       <div>
         <div className={'flex flex-col justify-center items-center text-white'}>
           <div className={'text-gray-400 text-[18px]'}>
-            도전 기회 <span className={'text-red-400'}>{'무한'}</span> 남음
+            도전 기회{' '}
+            <span className={'text-red-400'}>{userData?.tryCount}</span> 남음
           </div>
           <div className={'text-[20px] font-semibold'}></div>
         </div>
-        <button
+        <Button
           className={
-            'mt-5 w-full mb-5 bg-red-400 text-white py-4 rounded-[8px] text-[18px]'
+            'mt-5 w-full mb-5 bg-red-400 h-15 text-white py-4 rounded-[8px] text-[18px]'
           }
           onClick={handleReset}
+          disabled={!!timeLeft}
         >
           다시 그리기
-        </button>
+        </Button>
       </div>
     </main>
   );

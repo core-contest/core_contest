@@ -7,12 +7,17 @@ import {
   accuracyAtom,
   timeLeftAtom,
   userPointsAtom,
+  userDataAtom,
 } from '@/store';
+import { postGameStart } from '@/lib/api/game';
+import Cookies from 'js-cookie';
+import { getMemberStatus } from '@/lib/api/login';
 
 export default function CircleGame() {
   const [isDrawing, setIsDrawing] = useState(false);
   const canvasRef = useRef<SVGSVGElement>(null);
   const timerRef = useRef<NodeJS.Timeout>();
+  const [userData, setUserData] = useAtom(userDataAtom);
 
   const [timeLeft, setTimeLeft] = useAtom(timeLeftAtom);
   const [userPoints, setUserPoints] = useAtom(userPointsAtom);
@@ -36,7 +41,6 @@ export default function CircleGame() {
     setUserPoints([{ x, y }]);
 
     timerRef.current = setInterval(() => {
-      console.log('카운트');
       setTimeLeft((prev) => {
         if (prev === null || prev <= 0) {
           handleMouseUp();
@@ -115,6 +119,16 @@ export default function CircleGame() {
     const result = calculateAccuracy(userPoints);
     setMessage(result.message);
     setAccuracy(result.accuracy);
+
+    // console.log(JSON.parse(Cookies.get('user') || '{}').ssn);
+    postGameStart(JSON.parse(Cookies.get('user') || '{}').ssn, result.accuracy);
+
+    // 데이터 받아와 state 에 등록
+    getMemberStatus(JSON.parse(Cookies.get('user') || '{}').ssn).then(
+      (data: any) => {
+        setUserData(data);
+      }
+    );
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -155,6 +169,13 @@ export default function CircleGame() {
   };
 
   useEffect(() => {
+    // 데이터 받아와 state 에 등록
+    getMemberStatus(JSON.parse(Cookies.get('user') || '{}').ssn).then(
+      (data: any) => {
+        setUserData(data);
+      }
+    );
+
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
@@ -209,7 +230,7 @@ export default function CircleGame() {
       </svg>
 
       <div className='text-xl font-semibold text-red-500 text-center'>
-        남은 시간: {timeLeft}초
+        남은 시간: {timeLeft ? timeLeft : '0'}초
       </div>
     </div>
   );

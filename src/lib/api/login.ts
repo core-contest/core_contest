@@ -6,11 +6,13 @@ export const postLoginData = async (loginData: any) => {
     loginData
   );
 
-  console.log('로그인 post', response.data.data);
   return response.data.data;
 };
 
-export const getMemberStatus = (ssn: number) => {
-    return axios.get(`https://draw-o.kro.kr/api/v1/member/status?ssn=${ssn}`)
+export const getMemberStatus = async (ssn: number) => {
+  const response = await axios.get(
+    `https://draw-o.kro.kr/api/v1/member/status?ssn=${ssn}`
+  );
 
+  return response.data.data;
 };

@@ -11,16 +11,29 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { postLoginData } from '@/lib/api/login';
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
 
 export function LoginForm() {
-  const handleSubmit = (e: any) => {
+  const router = useRouter();
+
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    postLoginData({
-      name: e.target.name.value,
-      ssn: e.target.ssn.value,
-      phone: e.target.phone.value,
-    });
+    try {
+      const data = await postLoginData({
+        name: e.target.name.value,
+        ssn: e.target.ssn.value,
+        phone: e.target.phone.value,
+      });
+
+      if (data) {
+        Cookies.set('user', JSON.stringify(data), { expires: 7 });
+        router.push('/circle');
+      }
+    } catch (error) {
+      console.error('로그인 실패:', error);
+    }
   };
 
   return (

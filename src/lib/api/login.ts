@@ -7,3 +7,8 @@ export const postLoginData = (loginData: any) => {
       console.log('로그인 post', res);
     });
 };
+
+export const getMemberStatus = (ssn: number) => {
+    return axios.get(`https://draw-o.kro.kr/api/v1/member/status?ssn=${ssn}`)
+
+};

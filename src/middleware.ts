@@ -21,7 +21,7 @@ export function middleware(request: NextRequest) {
 
   if (request.nextUrl.pathname === '/admin') {
     if (
-      JSON.parse(request.cookies.get('user')?.value || '{}').role === 'admin'
+      JSON.parse(request.cookies.get('user')?.value || '{}').role === 'ADMIN'
     ) {
       return NextResponse.next();
     } else {

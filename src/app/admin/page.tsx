@@ -6,8 +6,7 @@ import {getUserList} from "@/lib/api/admin";
 import Cookies from "js-cookie";
 
 const AdminPage = () => {
-    const [userList, setUserList] = useState([]); // 초기 상태는 빈 배열
-    const [userSsn, setUserSsn] = useState(0);
+    const [userList, setUserList] = useState<any[]>([]); // 초기 상태는 빈 배열
 
     useEffect(() => {
         getUserList().then((r) => {
@@ -25,7 +24,7 @@ const AdminPage = () => {
                     return (
                         <section key={user.ssn} className={'border-b border-gray-600 px-3 py-4'}>
                             <div className={'flex justify-between items-center'}>
-                                <div className={'flex gap-x-5'}>
+                                <div className={'flex gap-x-5 w-[60%]'}>
                                     <div className={'text-[18px] text-red-400'}>
                                         {index + 1}
                                     </div>

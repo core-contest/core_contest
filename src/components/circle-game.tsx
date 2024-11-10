@@ -32,7 +32,13 @@ export default function CircleGame() {
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (!canvasRef.current || timeLeft === null || timeLeft <= 0) return;
+    if (
+      !canvasRef.current ||
+      timeLeft === null ||
+      timeLeft <= 0 ||
+      userData?.tryCount <= 0
+    )
+      return;
     const rect = canvasRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -52,7 +58,13 @@ export default function CircleGame() {
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDrawing || !canvasRef.current || timeLeft === null || timeLeft <= 0)
+    if (
+      !isDrawing ||
+      !canvasRef.current ||
+      timeLeft === null ||
+      timeLeft <= 0 ||
+      userData?.tryCount <= 0
+    )
       return;
     const rect = canvasRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -102,15 +114,10 @@ export default function CircleGame() {
     const baseAccuracy = Math.max(0, 100 * (1 - avgRadiusDeviation * 4));
     const finalAccuracy = baseAccuracy;
 
-    console.log(points.length);
-    console.log(avgRadiusDeviation);
-    console.log(baseAccuracy);
-    console.log(finalAccuracy);
-
     return { message: '', accuracy: Math.round(finalAccuracy) };
   };
 
-  const handleMouseUp = () => {
+  const handleMouseUp = async () => {
     setIsDrawing(false);
     handleTimeout();
 
@@ -121,18 +128,28 @@ export default function CircleGame() {
     setAccuracy(result.accuracy);
 
     // console.log(JSON.parse(Cookies.get('user') || '{}').ssn);
-    postGameStart(JSON.parse(Cookies.get('user') || '{}').ssn, result.accuracy);
+    await postGameStart(
+      JSON.parse(Cookies.get('user') || '{}').ssn,
+      result.accuracy
+    );
 
     // 데이터 받아와 state 에 등록
-    getMemberStatus(JSON.parse(Cookies.get('user') || '{}').ssn).then(
+    await getMemberStatus(JSON.parse(Cookies.get('user') || '{}').ssn).then(
       (data: any) => {
         setUserData(data);
+        // console.log(data);
       }
     );
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (!canvasRef.current || timeLeft === null || timeLeft <= 0) return;
+    if (
+      !canvasRef.current ||
+      timeLeft === null ||
+      timeLeft <= 0 ||
+      userData?.tryCount <= 0
+    )
+      return;
     e.preventDefault();
     const rect = canvasRef.current.getBoundingClientRect();
     const touch = e.touches[0];
@@ -154,7 +171,13 @@ export default function CircleGame() {
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDrawing || !canvasRef.current || timeLeft === null || timeLeft <= 0)
+    if (
+      !isDrawing ||
+      !canvasRef.current ||
+      timeLeft === null ||
+      timeLeft <= 0 ||
+      userData?.tryCount <= 0
+    )
       return;
     e.preventDefault();
     const rect = canvasRef.current.getBoundingClientRect();

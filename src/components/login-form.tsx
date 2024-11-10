@@ -24,7 +24,7 @@ export function LoginForm() {
       const data = await postLoginData({
         name: e.target.name.value,
         ssn: e.target.ssn.value,
-        phone: e.target.phone.value,
+        phoneNumber: e.target.phone.value,
       });
 
       if (data) {

@@ -26,6 +26,7 @@ export default function Home() {
     setMessage(null);
     setTimeLeft(3);
   };
+
   return (
     <main
       className={
@@ -69,7 +70,7 @@ export default function Home() {
             'mt-5 w-full mb-5 bg-red-400 h-15 text-white py-4 rounded-[8px] text-[18px]'
           }
           onClick={handleReset}
-          disabled={!!timeLeft}
+          disabled={!!timeLeft || userData?.tryCount <= 0}
         >
           다시 그리기
         </Button>

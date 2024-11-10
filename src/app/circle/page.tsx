@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import FluentEmojiTrophy from '@/icons/FluentEmojiTrophy';
 import CircleGame from '@/components/circle-game';
 import { useAtom } from 'jotai';
@@ -12,6 +12,9 @@ import {
   userDataAtom,
 } from '@/store';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
+import { getRankList } from '@/lib/api/rank';
+import Cookies from 'js-cookie';
 
 export default function Home() {
   const [userPoints, setUserPoints] = useAtom(userPointsAtom);
@@ -19,6 +22,8 @@ export default function Home() {
   const [message, setMessage] = useAtom(messageAtom);
   const [timeLeft, setTimeLeft] = useAtom(timeLeftAtom);
   const [userData, setUserData] = useAtom(userDataAtom);
+  const [myRank, setMyRank] = useState<number>();
+  const router = useRouter();
 
   const handleReset = () => {
     setUserPoints([]);
@@ -26,6 +31,12 @@ export default function Home() {
     setMessage(null);
     setTimeLeft(3);
   };
+
+  useEffect(() => {
+    getRankList(JSON.parse(Cookies.get('user') || '{}').ssn).then((r) => {
+      setMyRank(r.data.data.myRank);
+    });
+  }, []);
 
   return (
     <main
@@ -40,12 +51,15 @@ export default function Home() {
       >
         <div className={'flex items-center gap-x-1 text-gray-300'}>
           <FluentEmojiTrophy />
-          친구들 중 1등이에요
+          친구들 중 {myRank}등이에요
         </div>
         <button
           className={
             'text-white text-[14px] px-3 py-1 rounded-[16px] bg-gray-600'
           }
+          onClick={() => {
+            router.push('/rank');
+          }}
         >
           랭킹 확인하기
         </button>

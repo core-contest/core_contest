@@ -95,7 +95,7 @@ export default function CircleGame() {
     const avgRadiusDeviation =
       radiusDeviation.reduce((a, b) => a + b) / radiusDeviation.length;
 
-    const baseAccuracy = Math.max(0, 100 * (1 - avgRadiusDeviation * 6));
+    const baseAccuracy = Math.max(0, 100 * (1 - avgRadiusDeviation * 4));
     const finalAccuracy = baseAccuracy;
 
     console.log(points.length);
@@ -117,6 +117,43 @@ export default function CircleGame() {
     setAccuracy(result.accuracy);
   };
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!canvasRef.current || timeLeft === null || timeLeft <= 0) return;
+    e.preventDefault();
+    const rect = canvasRef.current.getBoundingClientRect();
+    const touch = e.touches[0];
+    const x = touch.clientX - rect.left;
+    const y = touch.clientY - rect.top;
+
+    setIsDrawing(true);
+    setUserPoints([{ x, y }]);
+
+    timerRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev === null || prev <= 0) {
+          handleTouchEnd();
+          return null;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDrawing || !canvasRef.current || timeLeft === null || timeLeft <= 0)
+      return;
+    e.preventDefault();
+    const rect = canvasRef.current.getBoundingClientRect();
+    const touch = e.touches[0];
+    const x = touch.clientX - rect.left;
+    const y = touch.clientY - rect.top;
+    setUserPoints((prev) => [...prev, { x, y }]);
+  };
+
+  const handleTouchEnd = () => {
+    handleMouseUp();
+  };
+
   useEffect(() => {
     return () => {
       if (timerRef.current) {
@@ -126,7 +163,7 @@ export default function CircleGame() {
   }, []);
 
   return (
-    <div>
+    <div className='touch-none'>
       <svg
         ref={canvasRef}
         className='w-[400px] h-[400px] bg-background relative'
@@ -136,6 +173,10 @@ export default function CircleGame() {
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={{ touchAction: 'none' }}
       >
         {/* 기준이 되는 원 */}
         <circle

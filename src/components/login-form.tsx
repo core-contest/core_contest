@@ -37,42 +37,44 @@ export function LoginForm() {
   };
 
   return (
-    <Card className='mx-auto w-full max-w-md'>
-      <CardHeader>
-        <CardTitle className='text-2xl'>로그인</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit}>
-          <div className='grid gap-4'>
-            <div className='grid gap-2'>
-              <Label htmlFor='name'>
-                이름 <span className='text-red-400'>*</span>
-              </Label>
-              <Input id='name' type='text' placeholder='홍길동' required />
-            </div>
-
-            <div className='grid gap-2'>
-              <div className='flex items-center'>
-                <Label htmlFor='ssn'>
-                  학번 <span className='text-red-400'>*</span>
+    <div>
+      <Card className='mx-auto w-full max-w-md'>
+        <CardHeader>
+          <CardTitle className='text-2xl'>로그인</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit}>
+            <div className='grid gap-4'>
+              <div className='grid gap-2'>
+                <Label htmlFor='name'>
+                  이름 <span className='text-red-400'>*</span>
                 </Label>
+                <Input id='name' type='text' placeholder='홍길동' required />
               </div>
-              <Input id='ssn' type='text' placeholder='2024035234' required />
-            </div>
 
-            <div className='grid gap-2'>
-              <div className='flex items-center'>
-                <Label htmlFor='phone'>전화번호</Label>
+              <div className='grid gap-2'>
+                <div className='flex items-center'>
+                  <Label htmlFor='ssn'>
+                    학번 <span className='text-red-400'>*</span>
+                  </Label>
+                </div>
+                <Input id='ssn' type='text' placeholder='2024035234' required />
               </div>
-              <Input id='phone' type='text' placeholder='01012345678' />
-            </div>
 
-            <Button type='submit' className='w-full font-bold'>
-              로그인
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+              <div className='grid gap-2'>
+                <div className='flex items-center'>
+                  <Label htmlFor='phone'>전화번호</Label>
+                </div>
+                <Input id='phone' type='text' placeholder='01012345678' />
+              </div>
+
+              <Button type='submit' className='w-full font-bold'>
+                로그인
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

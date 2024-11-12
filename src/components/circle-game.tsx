@@ -12,6 +12,7 @@ import {
 import { postGameStart } from '@/lib/api/game';
 import Cookies from 'js-cookie';
 import { getMemberStatus } from '@/lib/api/login';
+import html2canvas from 'html2canvas';
 
 export default function CircleGame() {
   const [isDrawing, setIsDrawing] = useState(false);
@@ -23,6 +24,8 @@ export default function CircleGame() {
   const [userPoints, setUserPoints] = useAtom(userPointsAtom);
   const [accuracy, setAccuracy] = useAtom(accuracyAtom);
   const [message, setMessage] = useAtom(messageAtom);
+
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const handleTimeout = () => {
     if (timerRef.current) {
@@ -73,7 +76,7 @@ export default function CircleGame() {
   };
 
   const calculateAccuracy = (points: { x: number; y: number }[]) => {
-    if (points.length < 40) {
+    if (points.length < 130) {
       return { message: '원을 제대로 그려 주세요.', accuracy: 0 };
     }
 
@@ -127,19 +130,44 @@ export default function CircleGame() {
     setMessage(result.message);
     setAccuracy(result.accuracy);
 
-    // console.log(JSON.parse(Cookies.get('user') || '{}').ssn);
-    await postGameStart(
-      JSON.parse(Cookies.get('user') || '{}').ssn,
-      result.accuracy
-    );
+    // SVG를 포함한 div 요소 캡처
+    const captureElement = canvasRef.current?.parentElement;
+    if (!captureElement) return;
 
-    // 데이터 받아와 state 에 등록
-    await getMemberStatus(JSON.parse(Cookies.get('user') || '{}').ssn).then(
-      (data: any) => {
-        setUserData(data);
-        // console.log(data);
-      }
-    );
+    try {
+      const canvas = await html2canvas(captureElement, {
+        backgroundColor: '#141414',
+        scale: 1,
+        logging: false,
+        useCORS: true,
+        ignoreElements: (element) => {
+          // score-text 클래스를 가진 요소 무시
+          return element.classList.contains('score-text');
+        },
+      });
+
+      canvas.toBlob(
+        async (blob) => {
+          if (!blob) return;
+          const imageFile = new File([blob], 'circle.png', {
+            type: 'image/png',
+          });
+          // setPreviewUrl(URL.createObjectURL(blob));
+          // console.log('캡처된 이미지:', imageFile);
+
+          await postGameStart(userData.ssn, result.accuracy, imageFile);
+          await getMemberStatus(
+            JSON.parse(Cookies.get('user') || '{}').ssn
+          ).then((data: any) => {
+            setUserData(data);
+          });
+        },
+        'image/png',
+        1.0
+      );
+    } catch (error) {
+      console.error('이미지 캡처 중 오류 발생:', error);
+    }
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -208,53 +236,73 @@ export default function CircleGame() {
 
   return (
     <div className='touch-none'>
-      <svg
-        ref={canvasRef}
-        className='w-[400px] h-[400px] bg-background relative'
-        width='400'
-        height='400'
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        style={{ touchAction: 'none' }}
-      >
-        {/* 기준이 되는 원 */}
-        <circle
-          cx='200'
-          cy='200'
-          r='150'
-          className='stroke-gray-300'
-          strokeWidth='2'
-          fill='none'
-          strokeDasharray='5,5'
-        />
-
-        {/* 중앙 정확도 텍스트 */}
-        <foreignObject x='160' y='180' width='100' height='60'>
-          <div className='text-center font-bold select-none text-red-400 text-[30px]'>
-            {accuracy ? accuracy : '00'}
-            <span className='text-white'>점</span>
-          </div>
-        </foreignObject>
-
-        {/* 사용자가 그린 선 */}
-        {userPoints.length > 1 && (
-          <path
-            d={`M ${userPoints.map((p) => `${p.x} ${p.y}`).join(' L ')}`}
-            className='stroke-blue-500'
-            strokeWidth='6'
+      {/* SVG를 감싸는 div에 id 추가 */}
+      <div id='capture-area' className='relative'>
+        <svg
+          ref={canvasRef}
+          className='w-[400px] h-[400px] bg-background relative'
+          width='400'
+          height='400'
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          style={{ touchAction: 'none' }}
+        >
+          {/* 기준이 되는 원 */}
+          <circle
+            cx='200'
+            cy='200'
+            r='150'
+            className='stroke-gray-300'
+            strokeWidth='2'
             fill='none'
+            strokeDasharray='5,5'
           />
-        )}
-      </svg>
+
+          {/* 중앙 정확도 텍스트 */}
+          <foreignObject
+            x='160'
+            y='180'
+            width='100'
+            height='60'
+            className='score-text'
+          >
+            <div className='text-center font-bold select-none text-red-400 text-[30px]'>
+              {accuracy ? accuracy : '00'}
+              <span className='text-white'>점</span>
+            </div>
+          </foreignObject>
+
+          {/* 사용자가 그린 선 */}
+          {userPoints.length > 1 && (
+            <path
+              d={`M ${userPoints.map((p) => `${p.x} ${p.y}`).join(' L ')}`}
+              className='stroke-blue-500'
+              strokeWidth='6'
+              fill='none'
+            />
+          )}
+        </svg>
+      </div>
 
       <div className='text-xl font-semibold text-red-500 text-center'>
         남은 시간: {timeLeft ? timeLeft : '0'}초
       </div>
+
+      {/* 이미지 미리보기 추가 */}
+      {/* {previewUrl && (
+        <div className='mt-4'>
+          <img
+            src={previewUrl}
+            alt='미리보기'
+            className='w-[400px] h-[400px]'
+          />
+        </div>
+      )} */}
     </div>
   );
 }

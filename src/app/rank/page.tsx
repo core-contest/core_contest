@@ -9,11 +9,19 @@ import { useRouter } from 'next/navigation';
 import { getRankList } from '@/lib/api/rank';
 import Cookies from 'js-cookie';
 import { RankResponseType } from '@/type/rank';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 const RankPage = () => {
   const router = useRouter();
   const [rankList, setRankList] = useState<any[]>([]); // 초기 상태는 빈 배열
   const [rankNumber, setRankNumber] = useState(0);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const fetchRankList = async () => {
     try {
@@ -89,7 +97,15 @@ const RankPage = () => {
         </div>
         <div className={'mt-3'}>
           {rankList[0] && (
-            <div className={'py-4 border-b border-gray-600'}>
+            <div
+              className={'py-4 border-b border-gray-600 cursor-pointer'}
+              onClick={() => {
+                if (rankList[0]?.bestScoreImageUrl) {
+                  setSelectedImage(rankList[0].bestScoreImageUrl);
+                  setIsDialogOpen(true);
+                }
+              }}
+            >
               <div className={'flex items-center gap-x-3'}>
                 <FluentEmoji1stPlaceMedal />
                 <div>
@@ -104,7 +120,15 @@ const RankPage = () => {
             </div>
           )}
           {rankList[1] && (
-            <div className={'py-4 border-b border-gray-600'}>
+            <div
+              className={'py-4 border-b border-gray-600 cursor-pointer'}
+              onClick={() => {
+                if (rankList[1]?.bestScoreImageUrl) {
+                  setSelectedImage(rankList[1].bestScoreImageUrl);
+                  setIsDialogOpen(true);
+                }
+              }}
+            >
               <div className={'flex items-center gap-x-3'}>
                 <FluentEmoji2ndPlaceMedal />
                 <div>
@@ -119,7 +143,15 @@ const RankPage = () => {
             </div>
           )}
           {rankList[2] && (
-            <div className={'py-4 border-b border-gray-600'}>
+            <div
+              className={'py-4 border-b border-gray-600 cursor-pointer'}
+              onClick={() => {
+                if (rankList[2]?.bestScoreImageUrl) {
+                  setSelectedImage(rankList[2].bestScoreImageUrl);
+                  setIsDialogOpen(true);
+                }
+              }}
+            >
               <div className={'flex items-center gap-x-3'}>
                 <FluentEmoji3rdPlaceMedal />
                 <div>
@@ -138,7 +170,15 @@ const RankPage = () => {
               return (
                 <div
                   key={rank?.ssn}
-                  className={'border-b border-gray-600 px-3 py-4'}
+                  className={
+                    'border-b border-gray-600 px-3 py-4 cursor-pointer'
+                  }
+                  onClick={() => {
+                    if (rank?.bestScoreImageUrl) {
+                      setSelectedImage(rank.bestScoreImageUrl);
+                      setIsDialogOpen(true);
+                    }
+                  }}
                 >
                   <div
                     className={
@@ -160,6 +200,20 @@ const RankPage = () => {
             })}
         </div>
       </div>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>최고 점수 스크린샷</DialogTitle>
+          </DialogHeader>
+          {selectedImage && (
+            <img
+              src={selectedImage}
+              alt='Best Score Screenshot'
+              className='w-full h-auto'
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </main>
   );
 };

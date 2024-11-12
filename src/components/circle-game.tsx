@@ -76,7 +76,7 @@ export default function CircleGame() {
   };
 
   const calculateAccuracy = (points: { x: number; y: number }[]) => {
-    if (points.length < 130) {
+    if (points.length < 70) {
       return { message: '원을 제대로 그려 주세요.', accuracy: 0 };
     }
 

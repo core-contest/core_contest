@@ -67,9 +67,9 @@ const RankPage = () => {
           <div className={'text-white text-[24px]'}>랭킹 순위</div>
           <button
             className={'text-[14px]'}
-            onClick={() => {
+            onClick={async () => {
               Cookies.remove('user');
-              router.push('/');
+              window.location.href = '/';
             }}
           >
             로그아웃

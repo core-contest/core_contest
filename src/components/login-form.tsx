@@ -38,7 +38,7 @@ export function LoginForm() {
 
   return (
     <div>
-      <Card className='mx-auto w-full max-w-md'>
+      <Card className='mx-auto w-[360px]'>
         <CardHeader>
           <CardTitle className='text-2xl'>로그인</CardTitle>
         </CardHeader>

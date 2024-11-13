@@ -115,9 +115,9 @@ export default function CircleGame() {
       radiusDeviation.reduce((a, b) => a + b) / radiusDeviation.length;
 
     const baseAccuracy = Math.max(0, 100 * (1 - avgRadiusDeviation * 4));
-    const finalAccuracy = baseAccuracy;
+    const finalAccuracy = Number(baseAccuracy.toFixed(2));
 
-    return { message: '', accuracy: Math.round(finalAccuracy) };
+    return { message: '', accuracy: finalAccuracy };
   };
 
   const handleMouseUp = async () => {
@@ -235,14 +235,17 @@ export default function CircleGame() {
   }, []);
 
   return (
-    <div className='touch-none'>
+    <div className="touch-none">
       {/* SVG를 감싸는 div에 id 추가 */}
-      <div id='capture-area' className='relative'>
+      <div
+        id="capture-area"
+        className="relative"
+      >
         <svg
           ref={canvasRef}
-          className='w-[400px] h-[400px] bg-background relative'
-          width='400'
-          height='400'
+          className="w-[400px] h-[400px] bg-background relative"
+          width="400"
+          height="400"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -254,26 +257,26 @@ export default function CircleGame() {
         >
           {/* 기준이 되는 원 */}
           <circle
-            cx='200'
-            cy='200'
-            r='150'
-            className='stroke-gray-300'
-            strokeWidth='2'
-            fill='none'
-            strokeDasharray='5,5'
+            cx="200"
+            cy="200"
+            r="150"
+            className="stroke-gray-300"
+            strokeWidth="2"
+            fill="none"
+            strokeDasharray="5,5"
           />
 
           {/* 중앙 정확도 텍스트 */}
           <foreignObject
-            x='160'
-            y='180'
-            width='100'
-            height='60'
-            className='score-text'
+            x="150"
+            y="180"
+            width="120"
+            height="60"
+            className="score-text"
           >
-            <div className='text-center font-bold select-none text-red-400 text-[30px]'>
-              {accuracy ? accuracy : '00'}
-              <span className='text-white'>점</span>
+            <div className="text-center font-bold select-none text-red-400 text-[30px]">
+              {accuracy ? accuracy.toFixed(2) : '00.00'}
+              <span className="text-white">점</span>
             </div>
           </foreignObject>
 
@@ -281,15 +284,15 @@ export default function CircleGame() {
           {userPoints.length > 1 && (
             <path
               d={`M ${userPoints.map((p) => `${p.x} ${p.y}`).join(' L ')}`}
-              className='stroke-blue-500'
-              strokeWidth='6'
-              fill='none'
+              className="stroke-blue-500"
+              strokeWidth="6"
+              fill="none"
             />
           )}
         </svg>
       </div>
 
-      <div className='text-xl font-semibold text-red-500 text-center'>
+      <div className="text-xl font-semibold text-red-500 text-center">
         남은 시간: {timeLeft ? timeLeft : '0'}초
       </div>
 

@@ -36,7 +36,7 @@ export default function Home() {
     getRankList(JSON.parse(Cookies.get('user') || '{}').ssn).then((r) => {
       setMyRank(r.data.data.myRank);
     });
-  }, []);
+  }, [accuracy]);
 
   return (
     <main
